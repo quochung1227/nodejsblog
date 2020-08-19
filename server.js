@@ -1,32 +1,53 @@
+// Goi cac module can thiet
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
+const ObjectId = require("mongodb").ObjectId;
 const Port = 3000;
+// Parse du lieu 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
+// Thiet lap duong dan static
 app.use("/static", express.static(__dirname + "/static")); //Serves resources from public folder
 // Setup view engine
 app.set('view engine', 'ejs');
 
 //Connect to mongoose
-mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true })
-    .then(response => {
-        console.log('Mongodb connect sucessed!')
-    }).catch(err => {
-        console.log('Mongodb connect failed!');
-    })
-    //Routes
-    // homepage 
-app.get('/', (req, res) => {
-    res.render("admin/dashboard");
+const MongoClient = require("mongodb").MongoClient;
+MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function(error, client) {
+    const blog = client.db("blog");
+    console.log("Database connected !");
+    //Homepage
+    app.get('/', (req, res) => {
+        blog.collection("posts").find().sort({ "_id": 1 }).toArray(function(error, posts) {
+            posts = posts.reverse();
+            res.render("user/home", { posts: posts });
+        })
+    });
+    // ADMIN DASHBOARD PAGE req.body
+    app.get('/admin/dashboard', (req, res) => {
+        res.render("admin/dashboard");
+    });
+    // ADMIN POST PAGE
+    app.get('/admin/posts', (req, res) => {
+        res.render("admin/posts");
+    });
+    // FUNCTION MAKE POST FORM
+    app.post('/do-post', (req, res) => {
+        blog.collection("posts").insertOne(req.body, function(error, document) {
+            res.send("Posted succcessfully");
+        });
+    });
+    // Mo detail post
+    app.get('/posts/:id', function(req, res) {
+        blog.collection("posts").findOne({ "_id": ObjectId(req.params.id) }, function(error, post) {
+            //res.render("user/post", { post: post });
+            res.send(post);
+        });
+    });
 });
-app.get('/admin/posts', (req, res) => {
-    res.render("admin/posts");
-});
-app.post("/do-post", (req, res) => {
-    res.send(req.body);
-})
+
 app.listen(Port, () => console.log(`Example app listening at :${Port}`));

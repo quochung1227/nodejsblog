@@ -1,0 +1,28 @@
+<%- include('header'); -%>
+    <!-- Main Content -->
+    <% posts.forEach(function(post) { %>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-preview">
+                        <a href="post.html">
+                            <h2 class="post-title">
+                                <!-- Man must explore, and this is exploration at its greatest -->
+                                <%- post.title %>
+                            </h2>
+                        </a>
+                        <p class="post-meta">
+                            <%- post.content %>
+                        </p>
+                    </div>
+                    <hr>
+                    <!-- Pager -->
+                    <div class="clearfix">
+                        <a class="btn btn-primary float-right" href="posts/ <%- post._id %>">Read more ... &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <% }) %>
+            <%- include('footer'); -%>
