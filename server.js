@@ -1,13 +1,11 @@
 // Goi cac module can thiet
 const express = require('express');
 const bodyParser = require('body-parser');
+//const { ObjectID } = require('mongodb');
 const app = express();
-const path = require('path');
-const mongoose = require('mongoose');
 const ObjectId = require("mongodb").ObjectId;
 const Port = 3000;
 // Parse du lieu 
-
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 // Thiet lap duong dan static
@@ -37,13 +35,16 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
     });
     // FUNCTION MAKE POST FORM
     app.post('/do-post', (req, res) => {
-        blog.collection("posts").insertOne(req.body, function(error, document) {
+        blog.collection("posts").insertOne(req.body, (error, document) => {
             res.send("Posted succcessfully");
         });
     });
     // Mo detail post
-    app.get('/posts/:id', function(req, res) {
-        blog.collection("posts").findOne({ "_id": ObjectId(req.params.id) }, function(error, post) {
+    app.get('/posts/:id', (req, res) => {
+        const myid = req.params.id;
+        const myid1 = myid.toString();
+        console.log(myid1);
+        blog.collection("posts").findOne({ "_id": ObjectId(myid1) }, (error, post) => {
             //res.render("user/post", { post: post });
             res.send(post);
         });
