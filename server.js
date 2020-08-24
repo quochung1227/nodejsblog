@@ -11,8 +11,7 @@ app.use(bodyParser.json());
 app.use("/static", express.static(__dirname + "/static")); //Serves resources from public folder
 // Setup view engine
 app.set('view engine', 'ejs');
-
-//Connect to mongoose
+//Connect to mongo
 const MongoClient = require("mongodb").MongoClient;
 MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function(error, client) {
     const blog = client.db("blog");
@@ -39,15 +38,18 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
         });
     });
     // Mo detail post
-    app.get('/posts/:id', (req, res) => {
+    app.get('/posts/:title', (req, res) => {
+        const myid = req.params.title;
         blog.collection("posts").findOne({
-                '_id': ObjectId(req.params.id)
+                'title': myid
             },
             (error, post) => {
-                //res.render("user/post", { post: post });
-                res.send(post);
+                res.render("user/post", { post: post });
+                //res.send(post);
             });
     });
+    // delete posts
+    app.delete('/')
 });
 
 app.listen(Port, () => console.log(`Example app listening at :${Port}`));
