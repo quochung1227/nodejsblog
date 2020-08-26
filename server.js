@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const ObjectId = require("mongodb").ObjectId;
 const Port = 3000;
+const BSON = require("bson");
 // Parse du lieu 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
@@ -48,8 +49,18 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
                 //res.send(post);
             });
     });
+    //do-comment
+    app.post("/do-comment", function(req, res) {
+        blog.collection("posts").updateOne({ "title": req.body.post_title }, {
+                $push: {
+                    "comments": { username: req.body.username, comment: req.body.comment }
+                }
+            },
+            function(error, post) {
+                res.send("Comment sucessful");
+            });
+    });
     // delete posts
-    app.delete('/')
 });
 
 app.listen(Port, () => console.log(`Example app listening at :${Port}`));
