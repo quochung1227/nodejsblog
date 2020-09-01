@@ -24,7 +24,7 @@
                                         <input class="form-control" name="username" placeholder="Name">
                                     </div>
                                     <div class="form-group">
-                                        <textarea placeholder="Write your comment here!" class="pb-cmnt-textarea" name="comment"></textarea>
+                                        <textarea type="hidden" placeholder="Write your comment here!" class="pb-cmnt-textarea" name="comment"></textarea>
                                     </div>
                                     <button class="btn btn-primary pull-right" type="submit">Comment</button>
                                 </form>
@@ -32,6 +32,20 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <% if(post.comments) { %>
+                    <% post.comments =post.comments.reverse();%>
+                        <% post.comments.forEach(function(comment){ %>
+                            <div class="media mb-4">
+                                <div class="media-body">
+                                    <h5 class="mt-0">
+                                        <%= comment.username %>
+                                    </h5>
+                                    <%= comment.comment %>
+                                </div>
+                            </div>
+                            <% }) %>
+                                <% } %>
             </div>
         </div>
     </div>
@@ -42,12 +56,16 @@
                 url: "/do-comment",
                 method: "POST",
                 data: {
+                    post_title: form.post_title.value,
                     username: form.username.value,
                     comment: form.comment.value
                 },
-                post_title: form.post_title.value,
+
                 success: function(response) {
                     alert(response);
+                    setTimeout(function() {
+                        window.location = window.location
+                    }, 500);
                 }
             });
             return false;

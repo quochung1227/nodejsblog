@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const ObjectId = require("mongodb").ObjectId;
 const Port = 3000;
-const BSON = require("bson");
+const formidable = require("formidable");
+const fs = require('fs');
 // Parse du lieu 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
@@ -14,7 +15,7 @@ app.use("/static", express.static(__dirname + "/static")); //Serves resources fr
 app.set('view engine', 'ejs');
 //Connect to mongo
 const MongoClient = require("mongodb").MongoClient;
-MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function(error, client) {
+MongoClient.connect("mongodb://localhost:27017", { useUnifiedTopology: true }, function(error, client) {
     const blog = client.db("blog");
     console.log("Database connected !");
     //Homepage
@@ -51,7 +52,10 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
     });
     //do-comment
     app.post("/do-comment", function(req, res) {
-        blog.collection("posts").updateOne({ "title": req.body.post_title }, {
+        const mytitle = req.body.post_title;
+        blog.collection("posts").updateOne({
+                "title": mytitle
+            }, {
                 $push: {
                     "comments": { username: req.body.username, comment: req.body.comment }
                 }
@@ -60,7 +64,14 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
                 res.send("Comment sucessful");
             });
     });
-    // delete posts
+    //do-upload-image
+    app.post("/do-upload-image", function(req, res) {
+        const formData = new formidable.IncomingForm();
+        formData.parse(req, function(error, fields, files) {
+            const oldPath = files.file.path;
+            res.send(oldPath);
+        })
+    })
 });
 
 app.listen(Port, () => console.log(`Example app listening at :${Port}`));
