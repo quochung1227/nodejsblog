@@ -6,6 +6,7 @@ const ObjectId = require("mongodb").ObjectId;
 const Port = 3000;
 const formidable = require("formidable");
 const fs = require('fs');
+const { response } = require('express');
 // Parse du lieu 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
@@ -69,7 +70,11 @@ MongoClient.connect("mongodb://localhost:27017", { useUnifiedTopology: true }, f
         const formData = new formidable.IncomingForm();
         formData.parse(req, function(error, fields, files) {
             const oldPath = files.file.path;
-            res.send(oldPath);
+            //res.send(oldPath);
+            const newPath = "static/images/" + files.file.name;
+            fs.rename(oldPath, newPath, function(err) {
+                res.send("/" + newPath);
+            })
         })
     })
 });

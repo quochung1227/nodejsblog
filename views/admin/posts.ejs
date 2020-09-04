@@ -9,27 +9,7 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
     Upload images
   </button>
-            <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Upload images</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" enctype="multipart/form-data" id="form-upload">
-                                <div class="form-group">
-                                    <input type="file" name="file" class="form-control">
-                                </div>
-                                <input type="submit" class="btn btn-success" value="Upload">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <div class="form-group">
                 <label>Content</label>
                 <textarea name="content" class="form-control" placeholder="Content"></textarea>
@@ -38,23 +18,30 @@
             <input type="submit" class="btn btn-info" value="Post">
         </form>
     </div>
+
+    <!-- Modal Upload form  -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Upload images</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" enctype="multipart/form-data" id="form-upload">
+                        <div class="form-group">
+                            <input type="file" name="file" class="form-control">
+                        </div>
+                        <input type="submit" class="btn btn-success" value="Upload">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
-        function doPost(form) {
-            $.ajax({
-                url: "/do-post",
-                method: "POST",
-                data: {
-                    title: form.title.value,
-                    content: form.content.value
-                },
-                success: function(response) {
-                    alert(response);
-                }
-            });
-            return false;
-        }
-    </script>
-    <script>
+        const imagePath = "";
         $('#form-upload').on("submit", function(e) {
             e.preventDefault();
             $.ajax({
@@ -66,9 +53,28 @@
                 processData: false,
                 success: function(response) {
                     alert(response);
+                    imagePath = response;
+                    //$('#myModal').hide();
                 }
-            })
+            });
+            return false;
         })
     </script>
-
+    <script>
+        function doPost(form) {
+            $.ajax({
+                url: "/do-post",
+                method: "POST",
+                data: {
+                    title: form.title.value,
+                    content: form.content.value,
+                    image: imagePath
+                },
+                success: function(response) {
+                    alert(response);
+                }
+            });
+            return false;
+        }
+    </script>
     <%- include('footer'); -%>
